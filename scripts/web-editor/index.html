@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>回声工坊 · 关卡编辑器</title>
+  <meta name="theme-color" content="#151918"><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="./" aria-label="回声工坊首页"><span class="brand-mark"><i></i><i></i><i></i></span><span>回声工坊<small>LEVEL STUDIO</small></span></a>
+    <div class="header-divider"></div>
+    <div id="map-project-title" class="project-title"><input id="level-name" aria-label="关卡名称" maxlength="16" spellcheck="false"><span id="save-status" role="status"><span class="status-dot"></span>所有更改已保存</span></div>
+    <nav id="map-file-actions" class="header-actions" aria-label="地图文件操作">
+      <button id="new" data-icon="plus">新建</button><button id="import" data-icon="import">导入</button><button id="export" data-icon="export">导出</button>
+      <span class="header-divider"></span><button id="preview" class="primary" data-icon="play">快速预览<kbd>P</kbd></button>
+    </nav>
+  </header>
+  <main id="map-workspace" class="workspace" aria-label="地图编辑">
+    <aside class="library panel" aria-label="素材库">
+      <div class="panel-heading"><h1>素材库</h1><span class="eyebrow">ASSETS</span></div>
+      <label class="search"><span data-symbol="search"></span><input id="search" type="search" placeholder="搜索地形、敌人、机关…" aria-label="搜索素材"><kbd>/</kbd></label>
+      <div id="categories" class="categories" role="group" aria-label="素材分类"></div>
+      <div id="palette" class="palette"></div>
+      <div class="library-footer"><span class="tiny-orbit"></span><div>让声音成为地图<small>用一点回声，创造一整个世界。</small></div></div>
+    </aside>
+    <section class="editor" aria-label="地图编辑工作区">
+      <div class="editor-toolbar">
+        <div class="tool-group" role="group" aria-label="编辑工具">
+          <button data-mode="select" data-icon="select" title="选择与移动 (V)" aria-label="选择与移动 (V)"><span>选择</span></button>
+          <button data-mode="brush" data-icon="brush" title="画笔 (B)" aria-label="画笔 (B)"><span>画笔</span></button>
+          <button data-mode="rectangle" data-icon="rectangle" title="矩形 (R)" aria-label="矩形 (R)"><span>矩形</span></button>
+          <button data-mode="fill" data-icon="fill" title="连通填充 (F)" aria-label="连通填充 (F)"><span>填充</span></button>
+          <button id="eraser" data-icon="erase" title="橡皮擦 (X)" aria-label="橡皮擦 (X)"></button>
+        </div>
+        <span class="divider"></span>
+        <label class="brush-size">笔刷<select id="brush-size" aria-label="笔刷大小"><option value="1">1 格</option><option value="2">2 格</option><option value="3">3 格</option></select></label>
+        <div class="toolbar-spacer"></div>
+        <button id="undo" class="icon-button" data-icon="undo" title="撤销 (⌘/Ctrl Z)" aria-label="撤销"></button>
+        <button id="redo" class="icon-button" data-icon="redo" title="重做 (⌘/Ctrl Shift Z)" aria-label="重做"></button>
+        <span class="divider"></span><button id="help" class="icon-button" data-icon="help" title="快捷键与帮助" aria-label="快捷键与帮助"></button>
+      </div>
+      <div id="map-stage" class="map-stage">
+        <div class="canvas-caption"><span class="canvas-dot"></span>关卡画布<span id="map-dimensions">36 × 48</span></div>
+        <canvas id="map" tabindex="0" aria-label="关卡地图，按 B 绘制，V 选择，空格拖动平移"></canvas>
+        <div id="pair-hint" class="pair-hint" hidden></div>
+        <div class="map-bottom"><div class="canvas-legend"><i></i>起点<b></b>出口<em></em>危险</div><div class="view-controls">
+          <button id="grid" class="icon-button" data-icon="grid" aria-label="显示网格" aria-pressed="true" title="网格 (G)"></button><span class="divider"></span>
+          <button id="zoom-out" aria-label="缩小">−</button><button id="zoom-value" title="点击适应画布">100%</button><button id="zoom-in" aria-label="放大">+</button>
+          <span class="divider"></span><button id="fit" class="icon-button" data-icon="fit" aria-label="适应画布" title="适应画布 (0)"></button>
+        </div></div>
+      </div>
+    </section>
+    <aside class="inspector panel" aria-label="关卡与对象属性">
+      <div class="panel-heading"><h2>属性检查器</h2><span class="eyebrow">INSPECTOR</span></div>
+      <section class="inspector-section"><div class="section-label">当前素材</div><div id="current-asset" class="current-asset"></div><p id="asset-description" class="description"></p><div id="placement-note" class="placement-note"></div></section>
+      <section class="inspector-section"><div class="section-label">选中对象<span id="selection-count">未选择</span></div><div id="selection" class="selection-empty">切换选择工具，点击地图中的对象<br>拖动即可调整位置</div><div id="object-properties"></div></section>
+      <section id="behavior-section" class="inspector-section" hidden><details class="behavior-rules" open><summary id="behavior-heading"></summary><dl id="behavior-details"></dl></details></section>
+      <section class="inspector-section"><div class="section-label">关卡检查<button id="validate" class="text-button">重新检查</button></div><div id="validation"></div></section>
+      <section class="inspector-section overview-section"><div class="section-label">地图概览<span id="object-count"></span></div><canvas id="minimap" aria-label="地图概览，点击定位"></canvas><div class="overview-meta"><span id="size-label">小型地图</span><span>边界已保护</span></div></section>
+      <div class="inspector-bottom"><span data-symbol="save"></span><span>草稿自动保存在当前浏览器<br><small>导出文件可备份或在其他电脑继续</small></span></div>
+    </aside>
+  </main>
+  <footer id="map-statusbar" class="statusbar"><span><i class="status-dot"></i><span id="tool-status">画笔 · 墙体</span></span><span id="interaction-hint">左键绘制 · 右键擦除 · 空格拖动平移</span><span class="status-right"><span id="coordinates">X — &nbsp; Y —</span><button id="shortcuts">键盘快捷键 <kbd>?</kbd></button></span></footer>
+  <div id="toast" role="status" hidden></div>
+  <dialog id="file-dialog" aria-labelledby="dialog-title"><form method="dialog" class="dialog-frame"><header><div><span class="eyebrow">ECHO STUDIO</span><h2 id="dialog-title"></h2></div><button value="cancel" class="icon-button" data-icon="close" aria-label="关闭"></button></header><div id="dialog-body"></div><p id="dialog-error" class="error" role="alert"></p><footer id="dialog-footer"></footer></form></dialog>
+  <section id="preview-screen" class="preview-screen" role="dialog" aria-modal="true" aria-label="真实游戏预览" hidden>
+    <header class="preview-header"><button id="back-to-editor" data-icon="arrow">返回编辑<kbd>Esc</kbd></button><div class="preview-title"><span class="live-dot"></span>真实场景预览<span id="preview-name"></span></div><div class="preview-actions"><button id="preview-restart" data-icon="redo">重新开始</button><button id="preview-pause">暂停</button><button id="preview-reveal" data-icon="eye" aria-pressed="false">显示全貌</button><button id="preview-sound" data-icon="sound" aria-pressed="true">音效开</button></div></header>
+    <div class="preview-stage"><canvas id="game-canvas" tabindex="0" aria-label="游戏试玩场景，WASD 移动，空格声波，E 诱饵"></canvas><div class="preview-side-note"><span class="eyebrow">PLAYTEST</span><h2>听见，才看见。</h2><p>按住空格蓄力，松开发出声波。<br>用脚步和回声，找到你设计的出口。</p><dl><dt>W A S D / ↑ ↓ ← →</dt><dd>移动</dd><dt>Shift + 移动</dt><dd>轻声慢走</dd><dt>按住空格 → 松开</dt><dd>蓄力声波</dd><dt>E / 鼠标右键</dt><dd>朝指针投掷诱饵</dd><dt>Esc</dt><dd>返回编辑，保留草稿</dd></dl></div><div id="preview-outcome" class="preview-outcome" hidden></div></div>
+    <footer class="preview-footer"><span id="preview-state">正在试玩</span><span id="preview-charge">声波准备就绪</span><span id="preview-player"></span></footer>
+  </section>
+  <script src="app.js"></script>
+</body>
+</html>

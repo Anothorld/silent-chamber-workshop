@@ -1,0 +1,4 @@
+const MAX_PROBE_RADIUS = 17;
+const GUNSHOT_RADIUS = MAX_PROBE_RADIUS * 1.2;
+
+module.exports = { MAX_PROBE_RADIUS, GUNSHOT_RADIUS };
